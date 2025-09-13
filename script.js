@@ -26,3 +26,10 @@ function getDate(){
 }
 
 getDate()
+
+
+function getWeekDay(){
+    console.log("date geted with split:\n",date.format("LLLL").split(",")[0])
+}
+
+getWeekDay()
