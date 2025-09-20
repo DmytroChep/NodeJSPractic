@@ -1,5 +1,8 @@
 const moment = require("moment")
 const express = require("express")
+const path = require("path")
+const fs = require("fs")
+
 
 // const date = moment()
 
@@ -45,6 +48,12 @@ const PORT = 8000
 
 const app = express()
 
+const jsonPath = path.join(__dirname, "posts.json")
+const postsFromJson = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
+
+app.get("/posts", (req, res) => {
+    res.status(418).json(postsFromJson)
+})
 
 app.get("/timestamp", (req, res) => {
     res.status(418).json({date: getFullDate()})
