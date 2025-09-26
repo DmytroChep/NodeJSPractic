@@ -54,60 +54,69 @@ const postsFromJson = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
 app.get("/posts", (req, res) => {
     const filter = Boolean(req.query.filter)
     console.log(filter)
+    let finalPosts = null
     if (filter === true){
-        const filteredPostsFromJson = postsFromJson.map((element) => {
-            if (element["title"].includes("a")){
-                return element
-            }
+        const filteredPostsFromJson = postsFromJson.filter((element) => {
+            return element["title"].includes("a")
         })
 
-        const skipElements = Number(req.query.skip)
+        let skipElements = req.query.skip
         const getElements = req.query.take 
 
         if(getElements === undefined){
-            const finalPosts = filteredPostsFromJson.slice(skipElements)
-            res.status(404).json(finalPosts) 
-            return;
-        }
-        const finalgetElements = Number(req.query.take)
-        
-        
-        if(isNaN(skipElements) || isNaN(finalgetElements)){
-            res.status(400).json({status:"take or get must be int!"})
-            return;
+            finalPosts = filteredPostsFromJson.slice(skipElements)
+            
+        } else{
+            if(skipElements === undefined){
+                skipElements = 0
+            } else{
+                skipElements = Number(req.query.take)
+            }
+    
+            const finalgetElements = Number(req.query.take)
+            
+            
+            if(isNaN(skipElements) || isNaN(finalgetElements)){
+                res.status(400).json({status:"take or get must be int!"})
+                return;
+            }
+            finalPosts = filteredPostsFromJson.slice(skipElements, finalgetElements + skipElements)
         }
 
-        const finalPosts = filteredPostsFromJson.slice(skipElements, finalgetElements + skipElements)
-        res.status(200).json(finalPosts)
     } else{
-        const skipElements = Number(req.query.skip)
+        let skipElements = req.query.skip
         const getElements = req.query.take 
         
         if(getElements === undefined){
-            const finalPosts = postsFromJson.slice(skipElements)
-            res.status(404).json(finalPosts) 
-            return;
-        }
-        const finalgetElements = Number(req.query.take)
-        
-        if(isNaN(skipElements) || isNaN(finalgetElements)){
-            res.status(400).json({status:"take or get must be int!"})
-            return;
-        }
+            finalPosts = postsFromJson.slice(skipElements)
 
-        const finalPosts = postsFromJson.slice(skipElements, finalgetElements + skipElements)
-        res.status(200).json(finalPosts)
+        } else{
+            const finalGetElements = Number(getElements)
+            if(skipElements === undefined){
+                skipElements = 0
+            } else{
+                skipElements = Number(req.query.take)
+            }
+            
+            if(isNaN(skipElements) || isNaN(finalGetElements)){
+                res.status(400).json({status:"take or get must be int!"})
+                return;
+            }
+    
+            finalPosts = postsFromJson.slice(skipElements, finalGetElements + skipElements)
+        }
     }
-        
+    res.status(200).json(finalPosts)
 })
 
 app.get("/posts/:id", (req, res) => {
     const post = postsFromJson[req.params.id]
     if (post){
         res.status(200).json({post: postsFromJson[postId]})
-    } else{
-        res.status(404).json({"status": "not found"})
-    }
+        return
+    } 
+    res.status(404).json({"status": "not found"})
+
 })
 
 app.get("/timestamp", (req, res) => {
