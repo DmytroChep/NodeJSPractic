@@ -4,6 +4,7 @@ const path = require("path")
 const fs = require("fs")
 const { isNumberObject } = require("util/types")
 const { isString } = require("util")
+const { isBoolean } = require("util")
 
 
 // const date = moment()
@@ -54,35 +55,61 @@ const jsonPath = path.join(__dirname, "posts.json")
 const postsFromJson = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
 
 app.get("/posts", (req, res) => {
-    const take = req.query.take !== undefined ? Number(req.query.take) : postsFromJson.length
-    const skip = req.query.skip !== undefined ? Number(req.query.skip) : 0
-    const filter = (req.query.filter ? undefined : false) ? undefined : true
+    // Отримуємо усі потрібні query параметри 
+    const skip = req.query.skip
+    const take = req.query.take
+    const filter = req.query.filter
+    
+    // Створюємо мутабельні версії змінних які збеігають query параметри та перетворюємо їх у певні типи даних
+    let numberSkip = Number(skip)
+    let numberTake = Number(take)
+    let boolFilter = Boolean(filter)
 
-    console.log(take)
-    console.log(skip)
-    console.log(filter)
-
-    if(isNaN(skip) && isNaN(take)){
-        res.status(400).json({status:"take or get must be int!"})
-        return;
+    // Ці умови потрібні щоб якщо query параметри не задані, задати стандартні дані
+    if (!skip){
+        numberSkip = 0
     }
-    let filteredPosts = postsFromJson.slice(skip, take + skip)
-    if (filter){
+    if (!take){
+        numberTake = postsFromJson.length
+    }
+    if (!filter){
+        boolFilter = false
+    }
+
+    // Перевіряємо на валідність query даних, та повідомляємо користовачу коли він вказав щось не так
+    if (isNaN(numberSkip)){
+        res.status(400).json("skip must be a number!")
+        return
+    }
+    if (isNaN(numberTake)){
+        res.status(400).json("take must be a number!")
+        return
+    }
+    if (!isBoolean(boolFilter)) {
+        res.status(400).json("fitler must be a boolean")
+        return
+    }
+    
+    // Створення зрізаного масиву постів та якщо фільтр є, то цей масив фільтрується ще раз по букві 'a' у назві 
+    let filteredPosts = postsFromJson.slice(numberSkip, numberTake + numberSkip)
+    if (boolFilter){
         filteredPosts = filteredPosts.filter((element) => {
-            return element["title"].includes("a")
+            return element.title.includes("a")
         })
     }
+    
+    // Повертаємо успіх зі зрізаним масивом постів
     res.status(200).json(filteredPosts)
     
 })
 
 app.get("/posts/:id", (req, res) => {
     const post = postsFromJson[req.params.id]
-    if (post){
-        res.status(200).json({post: postsFromJson[postId]})
+    if (!post){
+        res.status(404).json("post not fined")
         return
     } 
-    res.status(404).json({"status": "not found"})
+    res.status(200).json({post: postsFromJson[postId]})
 
 })
 
