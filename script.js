@@ -2,6 +2,8 @@ const moment = require("moment")
 const express = require("express")
 const path = require("path")
 const fs = require("fs")
+const { isNumberObject } = require("util/types")
+const { isString } = require("util")
 
 
 // const date = moment()
@@ -52,61 +54,26 @@ const jsonPath = path.join(__dirname, "posts.json")
 const postsFromJson = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
 
 app.get("/posts", (req, res) => {
-    const filter = Boolean(req.query.filter)
+    const take = req.query.take !== undefined ? Number(req.query.take) : postsFromJson.length
+    const skip = req.query.skip !== undefined ? Number(req.query.skip) : 0
+    const filter = (req.query.filter ? undefined : false) ? undefined : true
+
+    console.log(take)
+    console.log(skip)
     console.log(filter)
-    let finalPosts = null
-    if (filter === true){
-        const filteredPostsFromJson = postsFromJson.filter((element) => {
+
+    if(isNaN(skip) && isNaN(take)){
+        res.status(400).json({status:"take or get must be int!"})
+        return;
+    }
+    let filteredPosts = postsFromJson.slice(skip, take + skip)
+    if (filter){
+        filteredPosts = filteredPosts.filter((element) => {
             return element["title"].includes("a")
         })
-
-        let skipElements = req.query.skip
-        const getElements = req.query.take 
-
-        if(getElements === undefined){
-            finalPosts = filteredPostsFromJson.slice(skipElements)
-            
-        } else{
-            if(skipElements === undefined){
-                skipElements = 0
-            } else{
-                skipElements = Number(req.query.take)
-            }
-    
-            const finalgetElements = Number(req.query.take)
-            
-            
-            if(isNaN(skipElements) || isNaN(finalgetElements)){
-                res.status(400).json({status:"take or get must be int!"})
-                return;
-            }
-            finalPosts = filteredPostsFromJson.slice(skipElements, finalgetElements + skipElements)
-        }
-
-    } else{
-        let skipElements = req.query.skip
-        const getElements = req.query.take 
-        
-        if(getElements === undefined){
-            finalPosts = postsFromJson.slice(skipElements)
-
-        } else{
-            const finalGetElements = Number(getElements)
-            if(skipElements === undefined){
-                skipElements = 0
-            } else{
-                skipElements = Number(req.query.take)
-            }
-            
-            if(isNaN(skipElements) || isNaN(finalGetElements)){
-                res.status(400).json({status:"take or get must be int!"})
-                return;
-            }
-    
-            finalPosts = postsFromJson.slice(skipElements, finalGetElements + skipElements)
-        }
     }
-    res.status(200).json(finalPosts)
+    res.status(200).json(filteredPosts)
+    
 })
 
 app.get("/posts/:id", (req, res) => {
