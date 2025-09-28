@@ -5,6 +5,7 @@ const fs = require("fs")
 const { isNumberObject } = require("util/types")
 const { isString } = require("util")
 const { isBoolean } = require("util")
+const { isNumber } = require("util")
 
 
 // const date = moment()
@@ -51,8 +52,12 @@ const PORT = 8000
 
 const app = express()
 
-const jsonPath = path.join(__dirname, "posts.json")
-const postsFromJson = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
+const jsonPathPosts = path.join(__dirname, "posts.json")
+const jsonPathUsers = path.join(__dirname, "users.json")
+
+const postsFromJson = JSON.parse(fs.readFileSync(jsonPathPosts, "utf8"))
+
+const usersFromJson = JSON.parse(fs.readFileSync(jsonPathUsers, "utf8"))
 
 app.get("/posts", (req, res) => {
     // Отримуємо усі потрібні query параметри 
@@ -111,6 +116,44 @@ app.get("/posts/:id", (req, res) => {
     } 
     res.status(200).json({post: postsFromJson[postId]})
 
+})
+
+app.get("/users", (req, res) => {
+    const user = [...usersFromJson]
+    
+    
+    res.status(200).json(user)
+})
+
+app.get("/user/:id", (req, res) => {
+    let user = usersFromJson[Number(req.params.id) - 1]
+    const fields = req.query.fields
+    console.log(Array(fields))
+    if (fields){
+        const fieldsList = fields.split(",")
+        console.log(fieldsList)
+        const {id, username, email, password} = user
+        console.log(id, username, email, password)
+        user = {}
+        fieldsList.forEach((element) => {
+            if(element == "id"){
+                user.id = id
+            } else if(element == "username"){
+                user.username = username
+            } else if(element == "email"){
+                user.email = email
+            } else if(element == "password"){
+                user.password = password
+            }
+        });
+       
+        if (Object.keys(user).length === 0){
+            res.status(400).json("field must have fields: id; username; email; password")
+            return
+        }
+    }
+
+    res.status(200).json(user)
 })
 
 app.get("/timestamp", (req, res) => {
