@@ -2,6 +2,7 @@ const moment = require("moment")
 const express = require("express")
 const path = require("path")
 const fs = require("fs")
+const fsPromises = require("fs/promises")
 const { isNumberObject } = require("util/types")
 const { isString } = require("util")
 const { isBoolean } = require("util")
@@ -51,11 +52,12 @@ const HOST = "127.0.0.1"
 const PORT = 8000
 
 const app = express()
+app.use(express.json())
 
 const jsonPathPosts = path.join(__dirname, "posts.json")
 const jsonPathUsers = path.join(__dirname, "users.json")
 
-const postsFromJson = JSON.parse(fs.readFileSync(jsonPathPosts, "utf8"))
+let postsFromJson = JSON.parse(fs.readFileSync(jsonPathPosts, "utf8"))
 
 const usersFromJson = JSON.parse(fs.readFileSync(jsonPathUsers, "utf8"))
 
@@ -106,6 +108,36 @@ app.get("/posts", (req, res) => {
     // Повертаємо успіх зі зрізаним масивом постів
     res.status(200).json(filteredPosts)
     
+})
+
+async function addToJson(Massive, newObj) {
+    const massive = Massive
+    massive.push(newObj)
+    return await fsPromises.writeFile(jsonPathPosts, JSON.stringify(massive))
+}
+
+app.post("/posts", (req, res) => {
+    const requestBody = req.body
+    console.log(requestBody)
+    if(!requestBody){
+        res.status(422).json("must be a body data")
+        return
+    }
+    if (!requestBody.title || !requestBody.description || !requestBody.image){
+        res.status(422).json("all of data will be in body")
+        return
+    }
+
+    const post = {
+        title: String(requestBody.title),
+        description: String(requestBody.description),
+        image: String(requestBody.image)
+    }
+
+    const lastId = postsFromJson.at(-1).id + 1
+    post.id = lastId
+
+    res.status(200).json(post)
 })
 
 app.get("/posts/:id", (req, res) => {
