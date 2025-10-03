@@ -109,64 +109,81 @@ app.get("/posts", (req, res) => {
     res.status(200).json(filteredPosts)
     
 })
-
+// Створюємо асинхрону функцію для додавання обьекту у масивв
 async function addToJson(Massive, newObj) {
     const massive = Massive
     massive.push(newObj)
     return await fsPromises.writeFile(jsonPathPosts, JSON.stringify(massive))
 }
-
+// Функція для обробки пост запросу по ендоінту /posts
 app.post("/posts", (req, res) => {
+    // Отримуємо тіло пост запросу
     const requestBody = req.body
     console.log(requestBody)
+    // Якщо тіла запросу немає то повертаємо ошибку з одо 422 який означає що дані користувача не валідні, після чого завершємо функцію 
     if(!requestBody){
         res.status(422).json("must be a body data")
         return
     }
+    // Якщо хоть один з обов'язкових значень нема у тілі запросу то повертаємо ошибку 422 та завершаэмо функцію
     if (!requestBody.title || !requestBody.description || !requestBody.image){
         res.status(422).json("all of data will be in body")
         return
     }
-
+    // Після всіх перевірок переходимо до основного коду
+    // Створюємо обьєкт поста  з даними із боді
     const post = {
         title: String(requestBody.title),
         description: String(requestBody.description),
         image: String(requestBody.image)
     }
-
+    // Отримаємо айді останнього поста та додаємо до нього один щоб отримати айді новго поста. Після чого додаємо айді до об'єкту поста
     const lastId = postsFromJson.at(-1).id + 1
     post.id = lastId
+    // Використовуємо функцію для додавання в json наш об'єкт
+    addToJson(postsFromJson, post)
 
+    // Повертаємо код успіху
     res.status(200).json(post)
 })
 
+// Функція для обробки гет запросу по ендоінту /posts/:id
 app.get("/posts/:id", (req, res) => {
+    // отримаємо пост за айді которий ми отримали з рут параметрів
     const post = postsFromJson[req.params.id]
+    // Якщо пост не знайден то повертаємо помилку не зайдено та завершуємо роботу функції 
     if (!post){
         res.status(404).json("post not fined")
         return
     } 
+    // Повертаємо успіх
     res.status(200).json({post: postsFromJson[postId]})
 
 })
 
+// Функція для обробки гет запросу по ендоінту /users
 app.get("/users", (req, res) => {
+    // Оримуємо всіх користувачів та повертаємо успіх
     const user = [...usersFromJson]
-    
     
     res.status(200).json(user)
 })
-
+// Функція для обробки гет запросу по ендоінту /user/:id
 app.get("/user/:id", (req, res) => {
+    // Отримуємо потрібні дані з query параметрів та рут параметрів 
     let user = usersFromJson[Number(req.params.id) - 1]
     const fields = req.query.fields
     console.log(Array(fields))
+    // Якщо хоть який параметр є в query параметрах 
     if (fields){
+        // перетворюємо поля у масив
         const fieldsList = fields.split(",")
         console.log(fieldsList)
+        // диструктуризуємо обьєкт користувача
         const {id, username, email, password} = user
         console.log(id, username, email, password)
         user = {}
+        // Перебираємо елементи масиву та якщо цей елемент співпадає з полем то заповнюємо в об'єкті корисутвача це поле
         fieldsList.forEach((element) => {
             if(element == "id"){
                 user.id = id
@@ -178,13 +195,15 @@ app.get("/user/:id", (req, res) => {
                 user.password = password
             }
         });
-       
+
+        // Якщо длина об'єкту ноль то повертаємо помилку 400 та завершуємо роботу функції
         if (Object.keys(user).length === 0){
             res.status(400).json("field must have fields: id; username; email; password")
             return
         }
     }
 
+    // Повертаємо успіх
     res.status(200).json(user)
 })
 
