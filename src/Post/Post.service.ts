@@ -1,5 +1,6 @@
-const repositoriy = require("./product.repository")
+// const repositoriy = require("./product.repository")
 import type {Request} from "express"
+import { productRepository } from "./product.repository"
 
 interface Ipost {
     title: string,
@@ -8,7 +9,7 @@ interface Ipost {
     id: number;
 }
 
-const postService = {
+export const postService = {
     getSplicedPosts: (skip: number, take: number, filter: boolean) => {
         // Отримуємо усі потрібні query параметри 
             
@@ -23,7 +24,7 @@ const postService = {
                 numberSkip = 0
             }
             if (!take){
-                numberTake = repositoriy.postsFromJson.length
+                numberTake = productRepository.postsFromJson.length
             }
             if (!filter){
                 boolFilter = false
@@ -49,7 +50,7 @@ const postService = {
             console.log(numberSkip)
             console.log(numberTake)
             console.log(boolFilter)
-            let filteredPosts = repositoriy.postsFromJson.slice(numberSkip, numberTake + numberSkip)
+            let filteredPosts = productRepository.postsFromJson.slice(numberSkip, numberTake + numberSkip)
             if (boolFilter){
                 filteredPosts = filteredPosts.filter((element: Ipost) => {
                     return element.title.includes("a")
@@ -60,7 +61,7 @@ const postService = {
     },
 
     getPostById: (postId: number) => {
-        const post = repositoriy.postsFromJson[postId]
+        const post = productRepository.postsFromJson[postId]
         // Якщо пост не знайден то повертаємо помилку не зайдено та завершуємо роботу функції 
         if (!post){
             // res.status(404).json("post not fined")
@@ -68,7 +69,7 @@ const postService = {
         } 
         // Повертаємо успіх
         // res.status(200).json({post: repositoriy.postsFromJson[postId]})
-        return {status: "success", post: repositoriy.postsFromJson[postId]}
+        return {status: "success", post: productRepository.postsFromJson[postId]}
     },
     addPostToJson: (requestBody: Ipost) => {
         console.log(requestBody)
@@ -91,10 +92,10 @@ const postService = {
             id: 0
         }
         // Отримаємо айді останнього поста та додаємо до нього один щоб отримати айді новго поста. Після чого додаємо айді до об'єкту поста
-        const lastId = repositoriy.postsFromJson.at(-1).id + 1
+        const lastId = productRepository.postsFromJson.at(-1).id + 1
         post.id = lastId
         // Використовуємо функцію для додавання в json наш об'єкт
-        repositoriy.addToJson(repositoriy.postsFromJson, post)
+        productRepository.addToJson(productRepository.postsFromJson, post)
 
         // Повертаємо код успіху
         // res.status(200).json(post)
@@ -102,4 +103,3 @@ const postService = {
     }
 }
 
-module.exports = postService

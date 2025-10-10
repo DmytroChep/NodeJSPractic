@@ -1,12 +1,13 @@
-const repositoriy = require("./user.repository")
+// const repositoriy = require("./user.repository")
+import { userRepository } from "./user.repository"
 
-const userService = {
+export const userService = {
     getAllUsers: () => {
-        const user = [...repositoriy.usersFromJson]
+        const user = [...userRepository.usersFromJson]
         return user
     },
     getUserFields: (fields: string, userId: number) => {
-        let user = repositoriy.usersFromJson[userId]
+        let user = userRepository.usersFromJson[userId]
     
         console.log(fields)
         // Якщо хоть який параметр є в query параметрах 
@@ -42,5 +43,3 @@ const userService = {
         return user
     }
 }
-
-module.exports = userService

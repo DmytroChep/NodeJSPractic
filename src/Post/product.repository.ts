@@ -1,6 +1,7 @@
-const path = require("path")
-const fs = require("fs")
-const fsPromises = require("fs/promises")
+import path from "path"
+import {readFileSync} from "fs"
+import {writeFile} from "fs/promises"
+
 interface Ipost {
     title: string,
     description: string,
@@ -9,14 +10,13 @@ interface Ipost {
 }
 
 const jsonPathPosts = path.join(__dirname, "..", "..","posts.json")
-const  productRepository = {
-    postsFromJson : JSON.parse(fs.readFileSync(jsonPathPosts, "utf8")),
+export const  productRepository = {
+    postsFromJson : JSON.parse(readFileSync(jsonPathPosts, "utf8")),
     addToJson: async(Array: Ipost[], newObj: Ipost) => {
         const array = Array
         array.push(newObj)
-        return await fsPromises.writeFile(jsonPathPosts, JSON.stringify(array))
+        return await writeFile(jsonPathPosts, JSON.stringify(array))
     }
 }
 
 
-module.exports = productRepository

@@ -1,11 +1,12 @@
-const postService = require("./Post.service")
+// const postService = require("./Post.service")
 import type {Request, Response} from "express"
+import {postService} from "./Post.service"
 
-const postController = {
+export const postController = {
     getSplicedPosts: (req: Request, res: Response) => {
-        const skip = req.query.skip
-        const take = req.query.take
-        const filter = req.query.filter
+        const skip = Number(req.query.skip)
+        const take = Number(req.query.take)
+        const filter = Boolean(req.query.filter)
         
         
         const response =  postService.getSplicedPosts(skip, take, filter)
@@ -18,7 +19,7 @@ const postController = {
         res.status(200).json(response)
     },
     getPostById: (req:Request, res: Response) => {
-        const postId = req.params.id
+        const postId = Number(req.params.id)
 
         const response = postService.getPostById(postId)
         if (response.status === "error"){
@@ -40,4 +41,3 @@ const postController = {
     }
 }
 
-module.exports = postController

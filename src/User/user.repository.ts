@@ -1,10 +1,9 @@
-const path = require("path")
-const fs = require("fs")
-const jsonPathUsers = path.join(__dirname, "..", "..","users.json")
+import {join} from "path"
+import {readFileSync} from "fs"
+const jsonPathUsers = join(__dirname, "..", "..","users.json")
 
-const userRepository = {
-    usersFromJson: JSON.parse(fs.readFileSync(jsonPathUsers, "utf8"))
+export const userRepository = {
+    usersFromJson: JSON.parse(readFileSync(jsonPathUsers, "utf8"))
 }
 
 
-module.exports = userRepository
