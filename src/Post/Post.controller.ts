@@ -1,7 +1,8 @@
 const postService = require("./Post.service")
+import type {Request, Response} from "express"
 
 const postController = {
-    getSplicedPosts: (req, res) => {
+    getSplicedPosts: (req: Request, res: Response) => {
         const skip = req.query.skip
         const take = req.query.take
         const filter = req.query.filter
@@ -16,7 +17,7 @@ const postController = {
         // Повертаємо успіх зі зрізаним масивом постів
         res.status(200).json(response)
     },
-    getPostById: (req, res) => {
+    getPostById: (req:Request, res: Response) => {
         const postId = req.params.id
 
         const response = postService.getPostById(postId)
@@ -26,7 +27,7 @@ const postController = {
 
         res.status(200).json(response)
     },
-    addPostToJson: (req, res) => {
+    addPostToJson: (req: Request, res: Response) => {
         const requestBody = req.body
 
         const response = postService.addPostToJson(requestBody)

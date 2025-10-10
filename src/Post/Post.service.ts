@@ -1,7 +1,15 @@
 const repositoriy = require("./product.repository")
+import type {Request} from "express"
+
+interface Ipost {
+    title: string,
+    description: string,
+    image: string;
+    id: number;
+}
 
 const postService = {
-    getSplicedPosts: (skip, take, filter) => {
+    getSplicedPosts: (skip: number, take: number, filter: boolean) => {
         // Отримуємо усі потрібні query параметри 
             
             
@@ -22,23 +30,28 @@ const postService = {
             }
         
             // Перевіряємо на валідність query даних, та повідомляємо користовачу коли він вказав щось не так
-            if (isNaN(numberSkip)){
+            if (Number.isNaN(numberSkip)){
                 // res.status(400).json("skip must be a number!")
                 return {status:"error"}
             }
-            if (isNaN(numberTake)){
+            if (Number.isNaN(numberTake)){
                 // res.status(400).json("take must be a number!")
+                console.log("bool")
                 return {status:"error"}
             }
-            if (!typeof arg === "boolean") {
+            if (!(typeof boolFilter === "boolean")) {
                 // res.status(400).json("fitler must be a boolean")
+                console.log("bool")
                 return {status:"error"}
             }
             
             // Створення зрізаного масиву постів та якщо фільтр є, то цей масив фільтрується ще раз по букві 'a' у назві 
+            console.log(numberSkip)
+            console.log(numberTake)
+            console.log(boolFilter)
             let filteredPosts = repositoriy.postsFromJson.slice(numberSkip, numberTake + numberSkip)
             if (boolFilter){
-                filteredPosts = filteredPosts.filter((element) => {
+                filteredPosts = filteredPosts.filter((element: Ipost) => {
                     return element.title.includes("a")
                 })
             }
@@ -46,7 +59,7 @@ const postService = {
             return {status: "success", posts: filteredPosts}
     },
 
-    getPostById: (postId) => {
+    getPostById: (postId: number) => {
         const post = repositoriy.postsFromJson[postId]
         // Якщо пост не знайден то повертаємо помилку не зайдено та завершуємо роботу функції 
         if (!post){
@@ -57,7 +70,7 @@ const postService = {
         // res.status(200).json({post: repositoriy.postsFromJson[postId]})
         return {status: "success", post: repositoriy.postsFromJson[postId]}
     },
-    addPostToJson: (requestBody) => {
+    addPostToJson: (requestBody: Ipost) => {
         console.log(requestBody)
         // Якщо тіла запросу немає то повертаємо ошибку з одо 422 який означає що дані користувача не валідні, після чого завершємо функцію 
         if(!requestBody){
@@ -71,10 +84,11 @@ const postService = {
         }
         // Після всіх перевірок переходимо до основного коду
         // Створюємо обьєкт поста  з даними із боді
-        const post = {
+        const post: Ipost = {
             title: String(requestBody.title),
             description: String(requestBody.description),
-            image: String(requestBody.image)
+            image: String(requestBody.image),
+            id: 0
         }
         // Отримаємо айді останнього поста та додаємо до нього один щоб отримати айді новго поста. Після чого додаємо айді до об'єкту поста
         const lastId = repositoriy.postsFromJson.at(-1).id + 1

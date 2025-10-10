@@ -1,12 +1,13 @@
 const service = require("./user.service")
+import type {Request, Response} from "express"
 
 const userController = {
-    getAllUsers: (req, res) => {
+    getAllUsers: (req: Request, res: Response) => {
         const response = service.getAllUsers();
         res.status(200).json(response)
     },
 
-    getUserFields: (req, res) => {
+    getUserFields: (req: Request, res: Response) => {
         const fields = req.query.fields
         const userId = Number(req.params.id) - 1
         console.log(userId)

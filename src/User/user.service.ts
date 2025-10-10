@@ -5,7 +5,7 @@ const userService = {
         const user = [...repositoriy.usersFromJson]
         return user
     },
-    getUserFields: (fields, userId) => {
+    getUserFields: (fields: string, userId: number) => {
         let user = repositoriy.usersFromJson[userId]
     
         console.log(fields)
