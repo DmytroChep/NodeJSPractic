@@ -1,13 +1,9 @@
 // const repositoriy = require("./product.repository")
 import type {Request} from "express"
-import { productRepository } from "./product.repository"
+import { productRepository, jsonPathPosts } from "./product.repository"
+import {IPost} from "./Post.types"
+import { writeFile } from "fs/promises"
 
-interface Ipost {
-    title: string,
-    description: string,
-    image: string;
-    id: number;
-}
 
 export const postService = {
     getSplicedPosts: (skip: number, take: number, filter: boolean) => {
@@ -24,7 +20,9 @@ export const postService = {
                 numberSkip = 0
             }
             if (!take){
-                numberTake = productRepository.postsFromJson.length
+                if (productRepository.postsFromJson){
+                    numberTake = productRepository.postsFromJson.length
+                }
             }
             if (!filter){
                 boolFilter = false
@@ -52,7 +50,7 @@ export const postService = {
             console.log(boolFilter)
             let filteredPosts = productRepository.postsFromJson.slice(numberSkip, numberTake + numberSkip)
             if (boolFilter){
-                filteredPosts = filteredPosts.filter((element: Ipost) => {
+                filteredPosts = filteredPosts.filter((element: IPost) => {
                     return element.title.includes("a")
                 })
             }
@@ -61,6 +59,9 @@ export const postService = {
     },
 
     getPostById: (postId: number) => {
+        if (Number.isNaN(postId)){
+            return {status: "error"}
+        }
         const post = productRepository.postsFromJson[postId]
         // Якщо пост не знайден то повертаємо помилку не зайдено та завершуємо роботу функції 
         if (!post){
@@ -71,7 +72,7 @@ export const postService = {
         // res.status(200).json({post: repositoriy.postsFromJson[postId]})
         return {status: "success", post: productRepository.postsFromJson[postId]}
     },
-    addPostToJson: (requestBody: Ipost) => {
+    addPostToJson: (requestBody: IPost) => {
         console.log(requestBody)
         // Якщо тіла запросу немає то повертаємо ошибку з одо 422 який означає що дані користувача не валідні, після чого завершємо функцію 
         if(!requestBody){
@@ -85,7 +86,7 @@ export const postService = {
         }
         // Після всіх перевірок переходимо до основного коду
         // Створюємо обьєкт поста  з даними із боді
-        const post: Ipost = {
+        const post: IPost = {
             title: String(requestBody.title),
             description: String(requestBody.description),
             image: String(requestBody.image),
@@ -100,6 +101,29 @@ export const postService = {
         // Повертаємо код успіху
         // res.status(200).json(post)
         return {status: "success", post: post}
+    },
+    updateDataPost: async (postId: number, postData: IPost) => {
+        try{
+            if(!postId){
+                return {status:"error"}
+            }
+            let post: IPost = await productRepository.postsFromJson.find((PostEL: IPost) => {
+                return PostEL.id == postId
+            });
+
+            
+            if (!post){
+                return {status:"error"}
+            }
+            
+            post = Object.assign(post, postData)
+            console.log(post)
+            
+            return {status: "success", data: await writeFile(jsonPathPosts, JSON.stringify(productRepository.postsFromJson))}
+        }catch{
+            return {status: "error"}
+        }
+        
     }
 }
 

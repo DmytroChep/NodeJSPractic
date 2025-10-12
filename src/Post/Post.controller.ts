@@ -38,6 +38,18 @@ export const postController = {
         }
 
         res.status(200).json(response)
+    },
+    updateDataPost: async (req: Request, res: Response) => {
+        const requestBody = req.body
+        const postId = Number(req.params.id)
+        
+        const response = await postService.updateDataPost(postId, requestBody)
+
+        if (response.status === "error"){
+            res.status(400).json("error")
+        }
+
+        res.status(200).json(response)
     }
 }
 
