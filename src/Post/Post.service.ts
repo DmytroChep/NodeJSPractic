@@ -129,6 +129,9 @@ export const postService:ServiceContract = {
         
     } ,
     deletePost: async (postId) => {
+        if (Number.isNaN(Number(postId))){
+            return {status: "error"}
+        }
         try{
             const post = await client.post.delete(
                 {
