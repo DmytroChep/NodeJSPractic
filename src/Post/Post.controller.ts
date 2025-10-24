@@ -51,6 +51,17 @@ export const postController: ControllerContract = {
         }
 
         res.status(200).json(response)
+    },
+    deletePost: async (req, res) => {
+        const postId = req.params.id
+        
+        const response = await postService.deletePost(postId)
+
+        if (response.status === "error"){
+            res.status(400).json("error")
+        }
+
+        res.status(200).json(response)
     }
 }
 

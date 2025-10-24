@@ -1,9 +1,11 @@
 // const repositoriy = require("./product.repository")
 import type {Request} from "express"
 import { productRepository, jsonPathPosts } from "./product.repository"
-import {IPost, ServiceContract} from "./Post.types"
+import {CreatePost, ServiceContract} from "./Post.types"
 import { writeFile } from "fs/promises"
+import { PrismaClient } from "../generated/prisma"
 
+const client = new PrismaClient();
 
 export const postService:ServiceContract = {
     getSplicedPosts: (skip, take, filter) => {
@@ -48,9 +50,9 @@ export const postService:ServiceContract = {
             console.log(numberSkip)
             console.log(numberTake)
             console.log(boolFilter)
-            let filteredPosts: IPost[] = productRepository.postsFromJson.slice(numberSkip, numberTake + numberSkip)
+            let filteredPosts: CreatePost[] = productRepository.postsFromJson.slice(numberSkip, numberTake + numberSkip)
             if (boolFilter){
-                filteredPosts = filteredPosts.filter((element: IPost) => {
+                filteredPosts = filteredPosts.filter((element: CreatePost) => {
                     return element.title.includes("a")
                 })
             }
@@ -86,10 +88,11 @@ export const postService:ServiceContract = {
         }
         // Після всіх перевірок переходимо до основного коду
         // Створюємо обьєкт поста  з даними із боді
-        const post: IPost = {
+        const post: CreatePost = {
             title: String(requestBody.title),
             description: String(requestBody.description),
             image: String(requestBody.image),
+            likesCount: 123,
             id: 0
         }
         // Отримаємо айді останнього поста та додаємо до нього один щоб отримати айді новго поста. Після чого додаємо айді до об'єкту поста
@@ -107,7 +110,7 @@ export const postService:ServiceContract = {
             if(!postId){
                 return {status:"error"}
             }
-            let post = await productRepository.postsFromJson.find((PostEL: IPost) => {
+            let post = await productRepository.postsFromJson.find((PostEL: CreatePost) => {
                 return PostEL.id == postId
             });
 
@@ -124,6 +127,19 @@ export const postService:ServiceContract = {
             return {status: "error"}
         }
         
-    } 
+    } ,
+    deletePost: async (postId) => {
+        try{
+            const post = await client.post.delete(
+                {
+                    where: {id: Number(postId)}
+                }
+            )
+            console.log(post)
+            return {status: "success", data:  post}
+        }catch{
+            return {status: "error"}
+        }
+    }
 }
 

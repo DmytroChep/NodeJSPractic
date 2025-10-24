@@ -1,29 +1,41 @@
 import path from "path";
 import { Request, Response } from "express";
+import { Prisma } from "../generated/prisma";
 
-export interface IPost {
-    title: string,
-    description: string,
-    image: string;
-    id: number;
-}
+// export interface IPost {
+//     title: string,
+//     description: string,
+//     image: string;
+//     id: number;
+// }
+
+export type Post = Prisma.PostGetPayload<{select: {tags: false}}>;
+export type PostWithTags = Prisma.PostGetPayload<{select: {tags: true}}>;
+
+export type CreatePost = Prisma.PostUncheckedCreateInput;
+export type CreatePostChecked = Prisma.PostCreateInput;
+
+export type UpdatePost = Prisma.PostUncheckedUpdateInput;
+export type UpdatePostChecked = Prisma.PostUpdateInput;
 
 
-export type CreatePostData = Omit<IPost, "id">
+export type CreatePostData = Omit<Post, "id">
 
-export type UpdatePostData = Partial<Omit<IPost, "id">>    
+export type UpdatePostData = Partial<Omit<Post, "id">>    
 
 
 export interface ControllerContract {
-    getSplicedPosts: (req: Request<object, {status: string; posts?: IPost[]}|string, object, {take?: string, skip?:string, filter?: boolean}>, res: Response<{status: string; posts?: IPost[]}|string>)=> void;
-    getPostById: (req: Request<{id:number}, {status: string; post?: IPost}, object>, res: Response<{status: string; post?: IPost}|string>)=> void;
-    addPostToJson: (req: Request<object, {status: string; post?: IPost}|string, IPost>, res: Response<{status: string; post?: IPost}|string>)=> void;
-    updateDataPost: (req: Request<{id:number}, {status: string; data?: IPost}|string, IPost>, res: Response<{status: string; data?: IPost}|string>)=> void;
+    getSplicedPosts: (req: Request<object, {status: string; posts?: Post[]}|string, object, {take?: string, skip?:string, filter?: boolean}>, res: Response<{status: string; posts?: Post[]}|string>)=> void;
+    getPostById: (req: Request<{id:number}, {status: string; post?: Post}, object>, res: Response<{status: string; post?: Post}|string>)=> void;
+    addPostToJson: (req: Request<object, {status: string; post?: CreatePost}|string, CreatePost>, res: Response<{status: string; post?: CreatePost}|string>)=> void;
+    updateDataPost: (req: Request<{id:number}, {status: string; data?: UpdatePost}|string, UpdatePost>, res: Response<{status: string; data?: UpdatePost}|string>)=> void;
+    deletePost: (req: Request<{id:number}, {status: string; data?: Post}|string, Post>, res: Response<{status: string; data?: Post}|string>)=> void;
 }
 
 export interface ServiceContract {
-    getSplicedPosts: (skip: number, take: number, filter: boolean) => {status: string, posts?: IPost[]},
-    getPostById: (postId: number) => {status: string, post?: IPost},
-    addPostToJson: (requestBody: IPost) => {status: string, post?: IPost},
-    updateDataPost: (postId:number, postData: IPost) => Promise<{status: string, post?: IPost[]}>,
+    getSplicedPosts: (skip: number, take: number, filter: boolean) => {status: string, posts?: Post[]},
+    getPostById: (postId: number) => {status: string, post?: Post},
+    addPostToJson: (requestBody: CreatePost) => {status: string, post?: CreatePost},
+    updateDataPost: (postId:number, postData: UpdatePost) => Promise<{status: string, post?: UpdatePost[]}>,
+    deletePost: (postId:number) => Promise<{status: string, post?: Post}>,
 }
