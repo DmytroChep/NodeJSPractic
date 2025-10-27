@@ -9,8 +9,8 @@ import { Prisma } from "../generated/prisma";
 //     id: number;
 // }
 
-export type Post = Prisma.PostGetPayload<{select: {tags: false}}>;
-export type PostWithTags = Prisma.PostGetPayload<{select: {tags: true}}>;
+export type Post = Prisma.PostGetPayload<{include: {tags: false}}>;
+export type PostWithTags = Prisma.PostGetPayload<{include: {tags: true}}>;
 
 export type CreatePost = Prisma.PostUncheckedCreateInput;
 export type CreatePostChecked = Prisma.PostCreateInput;
@@ -36,6 +36,15 @@ export interface ServiceContract {
     getSplicedPosts: (skip: number, take: number, filter: boolean) => {status: string, posts?: Post[]},
     getPostById: (postId: number) => {status: string, post?: Post},
     addPostToJson: (requestBody: CreatePost) => {status: string, post?: CreatePost},
+    updateDataPost: (postId:number, postData: UpdatePost) => {status: string, post?: UpdatePost[]},
+    deletePost: (postId:number) => {status: string, post?: Post},
+}
+
+export interface RepositoryContract {
+    // addToJson: (Array: CreatePost[], newObj: CreatePost) => Promise<{}>,
+    getSplicedPosts: (skip: number, take: number, filter: boolean) => Promise<{status: string, posts?: Post[]}>,
+    getPostById: (postId: number) => Promise<{status: string, post?: Post}>,
+    addPostToJson: (requestBody: CreatePost) => Promise<{status: string, post?: CreatePost}>,
     updateDataPost: (postId:number, postData: UpdatePost) => Promise<{status: string, post?: UpdatePost[]}>,
     deletePost: (postId:number) => Promise<{status: string, post?: Post}>,
 }
