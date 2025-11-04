@@ -8,7 +8,6 @@ export const postService:ServiceContract = {
     getSplicedPosts: async (skip, take, filter) => {
         // Отримуємо усі потрібні query параметри 
             
-            
         const filteredPosts = await productRepository.getSplicedPosts(skip, take, filter)
         return filteredPosts
     },

@@ -4,7 +4,7 @@ import {postService} from "./Post.service"
 import { ControllerContract } from "./Post.types"
 
 export const postController: ControllerContract = {
-    getSplicedPosts: (req, res) => {
+    getSplicedPosts: (req, res): Promise<void> => {
         const skip = Number(req.query.skip)
         const take = Number(req.query.take)
         const filter = Boolean(req.query.filter)
@@ -12,31 +12,21 @@ export const postController: ControllerContract = {
         
         const response = postService.getSplicedPosts(skip, take, filter)
 
-        if (response.status === "error"){
-            res.status(400).json("must be a number!")
-        }
-
         // Повертаємо успіх зі зрізаним масивом постів
         res.status(200).json(response)
     },
-    getPostById: (req, res) => {
+    getPostById: async (req, res) => {
         const postId = Number(req.params.id)
 
         const response = postService.getPostById(postId)
-        if (response.status === "error"){
-            res.status(404).json("post not fined")
-        }
 
         res.status(200).json(response)
     },
-    addPostToJson: (req, res) => {
+    addPostToJson: async (req, res) => {
         const requestBody = req.body
 
         const response = postService.addPostToJson(requestBody)
 
-        if (response.status === "error"){
-            res.status(200).json("error")
-        }
 
         res.status(200).json(response)
     },
@@ -46,20 +36,12 @@ export const postController: ControllerContract = {
         
         const response = await postService.updateDataPost(postId, requestBody)
 
-        if (response.status === "error"){
-            res.status(400).json("error")
-        }
-
         res.status(200).json(response)
     },
     deletePost: async (req, res) => {
         const postId = req.params.id
         
         const response = await postService.deletePost(postId)
-
-        if (response.status === "error"){
-            res.status(404).json("not found")
-        }
 
         res.status(200).json(response)
     }

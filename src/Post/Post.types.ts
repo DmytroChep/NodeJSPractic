@@ -25,26 +25,26 @@ export type UpdatePostData = Partial<Omit<Post, "id">>
 
 
 export interface ControllerContract {
-    getSplicedPosts: (req: Request<object, {status: string; posts?: Post[]}|string, object, {take?: string, skip?:string, filter?: boolean}>, res: Response<{status: string; posts?: Post[]}|string>)=> void;
-    getPostById: (req: Request<{id:number}, {status: string; post?: Post}, object>, res: Response<{status: string; post?: Post}|string>)=> void;
-    addPostToJson: (req: Request<object, {status: string; post?: CreatePost}|string, CreatePost>, res: Response<{status: string; post?: CreatePost}|string>)=> void;
-    updateDataPost: (req: Request<{id:number}, {status: string; data?: UpdatePost}|string, UpdatePost>, res: Response<{status: string; data?: UpdatePost}|string>)=> void;
-    deletePost: (req: Request<{id:number}, {status: string; data?: Post}|string, Post>, res: Response<{status: string; data?: Post}|string>)=> void;
+    getSplicedPosts: (req: Request<object, {posts?: Post[]}|string, object, {take?: string, skip?:string, filter?: boolean}>, res: Response<Post[]|string>)=> void;
+    getPostById: (req: Request<{id:number}, {post?: Post}, object>, res: Response<{post?: Post}|string>)=> void;
+    addPostToJson: (req: Request<object, {post?: CreatePost}|string, CreatePost>, res: Response<{post?: CreatePost}|string>)=> void;
+    updateDataPost: (req: Request<{id:number}, {data?: UpdatePost}|string, UpdatePost>, res: Response<{data?: UpdatePost}|string>)=> void;
+    deletePost: (req: Request<{id:number}, {data?: Post}|string, Post>, res: Response<{data?: Post}|string>)=> void;
 }
 
 export interface ServiceContract {
-    getSplicedPosts: (skip: number, take: number, filter: boolean) => {status: string, posts?: Post[]},
-    getPostById: (postId: number) => {status: string, post?: Post},
-    addPostToJson: (requestBody: CreatePost) => {status: string, post?: CreatePost},
-    updateDataPost: (postId:number, postData: UpdatePost) => {status: string, post?: UpdatePost[]},
-    deletePost: (postId:number) => {status: string, post?: Post},
+    getSplicedPosts: (skip: number, take: number, filter: boolean) =>Post[],
+    getPostById: (postId: number) =>Post,
+    addPostToJson: (requestBody: CreatePost) =>CreatePost,
+    updateDataPost: (postId:number, postData: UpdatePost) =>UpdatePost[],
+    deletePost: (postId:number) =>Post,
 }
 
 export interface RepositoryContract {
     // addToJson: (Array: CreatePost[], newObj: CreatePost) => Promise<{}>,
-    getSplicedPosts: (skip: number, take: number, filter: boolean) => Promise<{status: string, posts?: Post[]}>,
-    getPostById: (postId: number) => Promise<{status: string, post?: Post}>,
-    addPostToJson: (requestBody: CreatePost) => Promise<{status: string, post?: CreatePost}>,
-    updateDataPost: (postId:number, postData: UpdatePost) => Promise<{status: string, post?: UpdatePost[]}>,
-    deletePost: (postId:number) => Promise<{status: string, post?: Post}>,
+    getSplicedPosts: (skip: number, take: number, filter: boolean) => Promise<Post[]>,
+    getPostById: (postId: number) => Promise<Post>,
+    addPostToJson: (requestBody: CreatePost) => Promise<CreatePost>,
+    updateDataPost: (postId:number, postData: UpdatePost) => Promise<{post: UpdatePost[]}>,
+    deletePost: (postId:number) => Promise<{post: Post}>,
 }
