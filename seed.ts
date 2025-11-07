@@ -53,7 +53,7 @@ async function getPostById(postId:number){
     }
 }
 
-createPost("superPost", "very cool post", "https://image.png", 1)
-createTag("nature")
-connectPostsToTags(1, 1)
-getPostById(2)
+
+createTag("3")
+createTag("2")
+createTag("1")

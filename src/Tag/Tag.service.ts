@@ -1,12 +1,12 @@
 // const repositoriy = require("./product.repository")
 import type {Request} from "express"
-import { productRepository, jsonPathPosts } from "./product.repository"
-import {CreatePost, ServiceContract} from "./Post.types"
+import { tagRepository } from "./Tag.repository"
+import {Createtag, ServiceContract} from "./Tag.types"
 import { writeFile } from "fs/promises"
 import { client } from "../client/client"
 
-export const postService:ServiceContract = {
-    getSplicedPosts: async (skip, take, filter) => {
+export const tagService:ServiceContract = {
+    getSplicedtags: async (skip, take, filter) => {
         // Отримуємо усі потрібні query параметри 
 
         // Ці умови потрібні щоб якщо query параметри не задані, задати стандартні дані
@@ -18,7 +18,7 @@ export const postService:ServiceContract = {
             numberSkip = 0
         }
         if (!take){
-            numberTake = (await client.post.findMany()).length
+            numberTake = (await client.tag.findMany()).length
         }
         if (!filter){
             boolFilter = false
@@ -38,26 +38,14 @@ export const postService:ServiceContract = {
             return "error"
         }
             
-        const filteredPosts = await productRepository.getSplicedPosts(numberSkip, numberTake, boolFilter)
-        return filteredPosts
+        const filteredtags = await tagRepository.getSplicedtags(numberSkip, numberTake, boolFilter)
+        return filteredtags
     },
 
-    getPostById: async (postId) => {
-        const post = await productRepository.getPostById(postId)
+    gettagById: async (tagId) => {
+        const tag = await tagRepository.gettagById(tagId)
 
-        return post
-    },
-    addPostToJson: async (requestBody) => {
-        const post = await productRepository.addPostToJson(requestBody)
-        return post
-    },
-    updateDataPost: async (postId, postData) => {
-        const post = await productRepository.updateDataPost(postId, postData)
-        return post
-    } ,
-    deletePost: async (postId) => {
-        const post = await productRepository.deletePost(postId)
-        return post
+        return tag
     }
 }
 

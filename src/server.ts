@@ -1,4 +1,5 @@
 import {postRouter} from "./Post/Post.router"
+import { tagRouter } from "./Tag/Tag.router";
 import {userRouter} from "./User/user.router"
 import express from 'express';
 
@@ -10,6 +11,7 @@ app.use(express.json())
 
 app.use(postRouter)
 app.use(userRouter)
+app.use(tagRouter)
 
 app.listen(PORT, HOST, () => {
     console.log(`http://${HOST}:${PORT}`)
