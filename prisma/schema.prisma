@@ -36,3 +36,11 @@ model TagsOnPosts {
   tagId Int
   @@id([postId, tagId])
 }
+
+
+model User {
+  id Int @unique @id @default(autoincrement())
+  username String @unique
+  email String
+  password Int
+}

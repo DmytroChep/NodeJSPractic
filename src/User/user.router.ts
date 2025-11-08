@@ -1,8 +1,7 @@
 import { Router } from "express"
-import { userController } from "./user.controller"
+import { UserController } from "./User.controller"
+
 export const userRouter = Router()
 
-userRouter.get("/users", userController.getAllUsers)
-userRouter.get("/user/:id", userController.getUserFields)
-
-
+userRouter.post("/user/registration", UserController.registration)
+userRouter.post("/user/login", UserController.login)
