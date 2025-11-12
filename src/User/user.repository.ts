@@ -10,7 +10,7 @@ export const UserRepository: RepositoryContract = {
         return user
     },
     login: async (UserData) => {
-        const user = await client.user.findUnique({where: {username: UserData.username}})
+        const user = await client.user.findUnique({where: {email: UserData.email}})
 
         return user
     }

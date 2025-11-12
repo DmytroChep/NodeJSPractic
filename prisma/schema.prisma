@@ -22,6 +22,9 @@ model Post {
   image String
   likesCount Int
   tags TagsOnPosts[]
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdById Int
+  likedBy PostLike[]
 }
 model Tag {
   id Int @unique @id @default(autoincrement())
@@ -40,7 +43,20 @@ model TagsOnPosts {
 
 model User {
   id Int @unique @id @default(autoincrement())
-  username String @unique
-  email String
-  password Int
+  firstname String 
+  secondName String 
+  email String @unique
+  avatar String @unique
+  password String @unique
+  isAdmin Boolean @default(false)
+  createdPosts Post[]
+  likedPosts PostLike[]
+}
+
+model PostLike {
+  post Post @relation(fields: [postId], references: [id])
+  postId Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  @@id([postId, userId])
 }
