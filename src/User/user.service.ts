@@ -1,11 +1,20 @@
+import { client } from "../client/client";
+import {sign, verify} from "jsonwebtoken";
 import { UserRepository } from "./User.repository";
 import { ServiceContract } from "./User.types";
+import { ENV } from "../config/env";
 
 export const UserService: ServiceContract = {
     registration: async (UserData) => {
         const user = await UserRepository.registration(UserData)
 
-        return user
+        if (typeof user === "string"){
+            return user
+        }
+
+        return sign(user.email, ENV.SECRET_KEY, {
+            expiresIn: "7d"
+        })
     },
     login: async (UserData) => {
         const user = await UserRepository.login(UserData)
@@ -16,10 +25,21 @@ export const UserService: ServiceContract = {
             return user
         }
 
-        if (!(UserData.password === user.password)){
-            return "password not correct"
-        }
+        
         
         return user
+    },
+    me: async (JWT) => {
+        const email = verify(JWT, ENV.SECRET_KEY) as string;
+
+        const user = await UserRepository.me(email);
+
+        if (typeof user === "string"){
+            return user
+        }
+
+        const { password, ...userWithoutPassword } = user;
+
+        return userWithoutPassword
     }
 }

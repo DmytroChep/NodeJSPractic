@@ -3,4 +3,5 @@ node_modules/
 /src/generated/prisma
 
 database/
-migrations/
+migrations
+.env

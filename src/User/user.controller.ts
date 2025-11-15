@@ -23,5 +23,25 @@ export const UserController: ControllerContract = {
         }
 
         res.status(200).json(response)
+    },
+    me: async (req, res) => {
+        const token = req.headers.authorization
+        if (token === undefined){
+            res.status(401).json("request doesn't have token")
+            return
+        }
+        const response = await UserService.me(token)
+
+        if (typeof response === "string"){
+            res.status(400).json(response)
+            return
+        }
+
+        if (!response){
+            res.status(404).json("user not found")
+            return
+        }
+
+        res.status(200).json(response)
     }
 }

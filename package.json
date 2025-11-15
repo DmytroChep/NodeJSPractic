@@ -2,27 +2,27 @@
   "name": "node_test",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server.js"
+  "homepage": "https://github.com/dimachep1408/NodeJSPractic#readme",
+  "bugs": {
+    "url": "https://github.com/dimachep1408/NodeJSPractic/issues"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimachep1408/NodeJSPractic.git"
+  },
   "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
-    "@prisma/client": "^6.17.1",
-    "@types/express": "^5.0.3",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "envalid": "^8.1.1",
     "express": "^5.1.0",
-    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
-    "moment": "^2.30.1",
-    "path": "^0.12.7",
-    "prisma": "^6.17.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  },
-  "devDependencies": {
-    "@types/node": "^24.7.1"
+    "prisma": "^6.19.0"
   }
 }
