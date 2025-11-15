@@ -4,6 +4,9 @@ import {writeFile} from "fs/promises"
 import { CreatePost, Post, RepositoryContract, UpdatePost } from "./Post.types"
 import { client } from "../client/client"
 import { Prisma } from "../generated/prisma"
+import { verify } from "jsonwebtoken"
+import { ENV } from "../config/env"
+import { Email } from "../User/User.types"
 
 
 // // postsFromJson : JSON.parse(readFileSync(jsonPathPosts, "utf8")),
@@ -57,9 +60,19 @@ export const  productRepository:RepositoryContract = {
             throw error
         }
     },
-    addPostToJson: async (requestBody) => {
+    addPostToJson: async (requestBody, token) => {
         try{
             console.log(requestBody)
+            const WebToken = verify(token, ENV.SECRET_KEY) as Email
+            const user = await client.user.findUnique({
+                where: {email: WebToken.email}
+            })
+
+            if (!user){
+                return "user is not found"
+            }
+
+            requestBody.createdById = user.id
     
             const post = client.post.create({
                 data: requestBody
@@ -76,7 +89,7 @@ export const  productRepository:RepositoryContract = {
         }
     },
 
-    updateDataPost: async (postId, postData) => {
+    updateDataPost: async (postId, postData, token) => {
         try{
             const post = await client.post.update({
                 where: {
@@ -97,7 +110,7 @@ export const  productRepository:RepositoryContract = {
         }
         
     },
-    deletePost: async (postId) => {
+    deletePost: async (postId, token) => {
         try{
             const post = await client.post.delete(
                 {

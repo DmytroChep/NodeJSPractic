@@ -24,27 +24,28 @@ export type CreatePostData = Omit<Post, "id">
 export type UpdatePostData = Partial<Omit<Post, "id">>    
 
 
+
 export interface ControllerContract {
     getSplicedPosts: (req: Request<object, Post[]|string, object, {take?: string, skip?:string, filter?: boolean}>, res: Response<Post[]|string>)=> Promise<void>;
     getPostById: (req: Request<{id:number}, Post|string|null, object>, res: Response<Post|string|null>)=> Promise<void>;
-    addPostToJson: (req: Request<object, Post|string, Post>, res: Response<Post|string>)=> Promise<void>;
-    updateDataPost: (req: Request<{id:number}, UpdatePost|string, UpdatePost>, res: Response<UpdatePost|string>)=> Promise<void>;
-    deletePost: (req: Request<{id:number}, Post|string, Post>, res: Response<Post|string>)=> Promise<void>;
+    addPostToJson: (req: Request<object, Post|string, Post>, res: Response<Post|string, {token: string}>)=> Promise<void>;
+    updateDataPost: (req: Request<{id:number}, UpdatePost|string, UpdatePost>, res: Response<UpdatePost|string, {token: string}>)=> Promise<void>;
+    deletePost: (req: Request<{id:number}, Post|string, Post>, res: Response<Post|string, {token: string}>)=> Promise<void>;
 }
 
 export interface ServiceContract {
     getSplicedPosts: (skip: number, take: number, filter: boolean) => Promise<Post[]|string>,
     getPostById: (postId: number) => Promise<Post|string|null>,
-    addPostToJson: (requestBody: CreatePost) => Promise<Post|string>,
-    updateDataPost: (postId:number, postData: UpdatePost) => Promise<UpdatePost|string>,
-    deletePost: (postId:number) => Promise<Post|string>,
+    addPostToJson: (requestBody: CreatePost, token: string) => Promise<Post|string>,
+    updateDataPost: (postId:number, postData: UpdatePost, token: string) => Promise<UpdatePost|string>,
+    deletePost: (postId:number, token: string) => Promise<Post|string>,
 }
 
 export interface RepositoryContract {
     // addToJson: (Array: CreatePost[], newObj: CreatePost) => Promise<{}>,
     getSplicedPosts: (skip: number, take: number, filter: boolean) => Promise<Post[]|string>,
     getPostById: (postId: number) => Promise<Post|string|null>,
-    addPostToJson: (requestBody: CreatePost) => Promise<Post|string>,
-    updateDataPost: (postId:number, postData: UpdatePost) => Promise<UpdatePost|string>,
-    deletePost: (postId:number) => Promise<Post|string>,
+    addPostToJson: (requestBody: CreatePost, token: string) => Promise<Post|string>,
+    updateDataPost: (postId:number, postData: UpdatePost, token: string) => Promise<UpdatePost|string>,
+    deletePost: (postId:number, token: string) => Promise<Post|string>,
 }

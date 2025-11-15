@@ -24,8 +24,12 @@ export const postController: ControllerContract = {
     },
     addPostToJson: async (req, res) => {
         const requestBody = req.body
+        if (!req.headers.authorization){
+            res.status(400).json("user not login")
+            return 
+        }
 
-        const response = await postService.addPostToJson(requestBody)
+        const response = await postService.addPostToJson(requestBody, res.locals.token)
 
 
         res.status(200).json(response)
@@ -34,14 +38,14 @@ export const postController: ControllerContract = {
         const requestBody = req.body
         const postId = Number(req.params.id)
         
-        const response = await postService.updateDataPost(postId, requestBody)
+        const response = await postService.updateDataPost(postId, requestBody, res.locals.token)
 
         res.status(200).json(response)
     },
     deletePost: async (req, res) => {
         const postId = Number(req.params.id)
         
-        const response = await postService.deletePost(postId)
+        const response = await postService.deletePost(postId, res.locals.token)
 
         res.status(200).json(response)
     }

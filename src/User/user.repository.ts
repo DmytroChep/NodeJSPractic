@@ -1,15 +1,18 @@
+import { compare, hash } from "bcrypt";
 import { client } from "../client/client";
 import { RepositoryContract} from "./User.types";
 
+
 export const UserRepository: RepositoryContract = {
     registration: async (UserData) => {
+        UserData.password = await hash(UserData.password, 10)
         const user = client.user.create({
             data: UserData
         })
 
-        if (client.user.findUnique({
+        if (!(client.user.findUnique({
             where: {email: UserData.email}
-        }) != null){
+        }))){
             return "user already exists!"
         }
 
@@ -20,7 +23,7 @@ export const UserRepository: RepositoryContract = {
         if (user == null){
             return "user doesn't exists"
         }
-        if (!(UserData.password === user.password)){
+        if (!await compare(UserData.password, user.password)){
             return "password not correct"
         }
 

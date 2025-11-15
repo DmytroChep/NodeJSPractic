@@ -47,16 +47,16 @@ export const postService:ServiceContract = {
 
         return post
     },
-    addPostToJson: async (requestBody) => {
-        const post = await productRepository.addPostToJson(requestBody)
+    addPostToJson: async (requestBody, token) => {
+        const post = await productRepository.addPostToJson(requestBody, token)
         return post
     },
-    updateDataPost: async (postId, postData) => {
-        const post = await productRepository.updateDataPost(postId, postData)
+    updateDataPost: async (postId, postData, token) => {
+        const post = await productRepository.updateDataPost(postId, postData, token)
         return post
     } ,
-    deletePost: async (postId) => {
-        const post = await productRepository.deletePost(postId)
+    deletePost: async (postId, token) => {
+        const post = await productRepository.deletePost(postId, token)
         return post
     }
 }
