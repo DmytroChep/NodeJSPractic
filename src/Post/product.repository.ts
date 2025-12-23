@@ -9,13 +9,6 @@ import { ENV } from "../config/env"
 import { Email } from "../User/User.types"
 
 
-// // postsFromJson : JSON.parse(readFileSync(jsonPathPosts, "utf8")),
-// addToJson: async(Array: CreatePost[], newObj: CreatePost) => {
-//     const array = Array
-//     array.push(newObj)
-//     return await writeFile(jsonPathPosts, JSON.stringify(array))
-// },
-export const jsonPathPosts = path.join(__dirname, "..", "..","posts.json")
 
 export const  productRepository:RepositoryContract = {
     getSplicedPosts: async (skip, take, filter) => {
@@ -44,10 +37,12 @@ export const  productRepository:RepositoryContract = {
             throw error
         }
     },
-    getPostById: async (postId) => { 
+    getPostById: async (postId, include) => { 
     try{ 
+
         const post =  client.post.findUnique({
-            where: {id: postId}
+            where: {id: postId},
+            include: include
         })
 
         return post
@@ -128,9 +123,71 @@ export const  productRepository:RepositoryContract = {
             throw error
         }
     },
+    createComment: async (postId, body, token) => {
+        const WebToken = verify(token, ENV.SECRET_KEY) as Email
+        const user = await client.user.findUnique({
+            where: {email: WebToken.email}
+        })
+
+        if (!user){
+            return "user is not found"
+        }
+
+        const commentData = { ...body, postId, userId: user.id };
+
+        const comment = await client.comment.create({data: commentData})
+        return comment
+    },
+    likePost: async (postId, token) => {
+        const WebToken = verify(token, ENV.SECRET_KEY) as Email
+        const user = await client.user.findUnique({
+            where: {email: WebToken.email}
+        })
+
+        if (!user){
+            return "user is not found"
+        }
+        await client.postLike.create({
+        data: {
+            postId: postId,
+            userId: user.id
+        }})
+        await client.post.update({
+            where: { id: postId },
+            data: {
+                likesCount: {
+                    increment: 1
+                }
+            }})
+
+        return "post was successfully liked"
+    },
+    unlikePost: async (postId, token) => {
+        const WebToken = verify(token, ENV.SECRET_KEY) as Email
+        const user = await client.user.findUnique({
+            where: {email: WebToken.email}
+        })
+
+        if (!user){
+            return "user is not found"
+        }
+
+        await client.postLike.delete({
+            where: {
+                postId_userId: {
+                    postId: postId,
+                    userId: user.id
+                }
+            }
+        });
+        await client.post.update({
+            where: { id: postId },
+            data: {
+                likesCount: {
+                    decrement: 1
+                }
+            }})
+
+        return "post was successfully unliked"
+        }
 }
-
-
-
-
-

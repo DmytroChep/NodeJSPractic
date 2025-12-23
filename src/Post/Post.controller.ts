@@ -17,8 +17,10 @@ export const postController: ControllerContract = {
     },
     getPostById: async (req, res) => {
         const postId = Number(req.params.id)
+        const includesQueries = req.query.include as string|string[]
+        console.log(includesQueries)
 
-        const response = await postService.getPostById(postId)
+        const response = await postService.getPostById(postId, includesQueries)
 
         res.status(200).json(response)
     },
@@ -47,6 +49,24 @@ export const postController: ControllerContract = {
         
         const response = await postService.deletePost(postId, res.locals.token)
 
+        res.status(200).json(response)
+    },
+    createComment: async(req, res) => {
+        const postId = Number(req.params.id)
+        const response = await postService.createComment(postId, req.body, res.locals.token)
+        
+        res.status(200).json(response)
+    },
+    likePost: async (req, res) => {
+        const postId = Number(req.params.id)
+        const response = await postService.likePost(postId, res.locals.token)
+
+        res.status(200).json(response)
+    },
+    unlikePost: async (req, res) => {
+        const postId = Number(req.params.id)
+        const response = await postService.unlikePost(postId, res.locals.token)
+        
         res.status(200).json(response)
     }
 }

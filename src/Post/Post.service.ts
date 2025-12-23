@@ -1,9 +1,11 @@
 // const repositoriy = require("./product.repository")
 import type {Request} from "express"
-import { productRepository, jsonPathPosts } from "./product.repository"
+import { productRepository } from "./product.repository"
 import {CreatePost, ServiceContract} from "./Post.types"
 import { writeFile } from "fs/promises"
 import { client } from "../client/client"
+import { start } from "repl"
+import { Prisma } from "../generated/prisma"
 
 export const postService:ServiceContract = {
     getSplicedPosts: async (skip, take, filter) => {
@@ -42,8 +44,22 @@ export const postService:ServiceContract = {
         return filteredPosts
     },
 
-    getPostById: async (postId) => {
-        const post = await productRepository.getPostById(postId)
+    getPostById: async (postId, include) => {
+        let includeQuery = {}
+        
+        if (typeof include === "string"){
+            if (include === "likedBy"){
+                includeQuery = {likedBy: true}
+     
+            }
+            else{
+                includeQuery = {createdBy: true}
+            }
+        }
+        else{
+            includeQuery = {comments: true, createdBy: true}
+        }
+        const post = await productRepository.getPostById(postId, includeQuery)
 
         return post
     },
@@ -58,6 +74,18 @@ export const postService:ServiceContract = {
     deletePost: async (postId, token) => {
         const post = await productRepository.deletePost(postId, token)
         return post
-    }
+    },
+    createComment: async (postId,body, token) => {
+        const comment = await productRepository.createComment(postId, body, token)
+        return comment
+    }, 
+    likePost: async (postId, token) => {
+        const status = await productRepository.likePost(postId, token)
+        return status
+    },
+    unlikePost: async (postId, token) => {
+        const status = await productRepository.unlikePost(postId, token)
+        return status
+    },
 }
 

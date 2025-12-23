@@ -1,8 +1,8 @@
 import { client } from "../client/client";
 import {sign, verify} from "jsonwebtoken";
-import { UserRepository } from "./User.repository";
 import { Email, ServiceContract } from "./User.types";
 import { ENV } from "../config/env";
+import { UserRepository } from "./user.repository";
 
 export const UserService: ServiceContract = {
     registration: async (UserData) => {

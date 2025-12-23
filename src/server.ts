@@ -2,6 +2,7 @@ import {postRouter} from "./Post/Post.router"
 import { tagRouter } from "./Tag/Tag.router";
 import {userRouter} from "./User/user.router"
 import express from 'express';
+import cors from 'cors';
 
 const HOST = "127.0.0.1"
 const PORT = 8000
@@ -9,6 +10,9 @@ const app = express()
 
 app.use(express.json())
 
+app.use(cors({
+    origin: `http://localhost:3000`
+}))
 app.use(postRouter)
 app.use(userRouter)
 app.use(tagRouter)

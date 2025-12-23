@@ -15,17 +15,22 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx ts-node src/server.ts",
+    "migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "envalid": "^8.1.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
     "prisma": "^6.19.0"
   }
 }
