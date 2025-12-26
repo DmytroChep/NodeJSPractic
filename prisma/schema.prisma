@@ -21,7 +21,7 @@ model Post {
   description String
   image String
   likesCount Int
-  tags TagsOnPosts[]
+  tags Tag[]
   createdBy User @relation(fields: [createdById], references: [id])
   createdById Int
   likedBy PostLike[]
@@ -30,15 +30,7 @@ model Post {
 model Tag {
   id Int @unique @id @default(autoincrement())
   name String
-  posts TagsOnPosts[]
-}
-
-model TagsOnPosts {
-  post Post @relation(fields: [postId], references: [id])
-  postId Int
-  tag Tag @relation(fields: [tagId], references: [id])
-  tagId Int
-  @@id([postId, tagId])
+  posts Post[]
 }
 
 

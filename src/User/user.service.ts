@@ -46,5 +46,10 @@ export const UserService: ServiceContract = {
         const { password, ...userWithoutPassword } = user;
 
         return userWithoutPassword
+    },
+    getById: async (userId) => {
+        const user = await UserRepository.getById(userId)
+
+        return user
     }
 }

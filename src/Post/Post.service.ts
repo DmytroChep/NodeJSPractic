@@ -9,9 +9,6 @@ import { Prisma } from "../generated/prisma"
 
 export const postService:ServiceContract = {
     getSplicedPosts: async (skip, take, filter) => {
-        // Отримуємо усі потрібні query параметри 
-
-        // Ці умови потрібні щоб якщо query параметри не задані, задати стандартні дані
 
         let numberSkip = Number(skip)
         let numberTake = Number(take)
@@ -53,11 +50,13 @@ export const postService:ServiceContract = {
      
             }
             else{
-                includeQuery = {createdBy: true}
+                includeQuery = {comments: {
+                    include: {user: true}
+                }}
             }
         }
         else{
-            includeQuery = {comments: true, createdBy: true}
+            includeQuery = {comments: {include: {user: true}}, likedBy: true}
         }
         const post = await productRepository.getPostById(postId, includeQuery)
 

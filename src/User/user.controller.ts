@@ -41,5 +41,12 @@ export const UserController: ControllerContract = {
         }
 
         res.status(200).json(response)
+    },
+    getById: async (req, res) => {
+        const userId = Number(req.params.id)
+
+        const response = await UserService.getById(userId)
+
+        res.status(200).json(response)
     }
 }

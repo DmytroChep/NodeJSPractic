@@ -1,7 +1,7 @@
 import path from "path"
 import {readFileSync} from "fs"
 import {writeFile} from "fs/promises"
-import { CreatePost, Post, RepositoryContract, UpdatePost } from "./Post.types"
+import { CreatePost, Post, PostWithTags, RepositoryContract, UpdatePost } from "./Post.types"
 import { client } from "../client/client"
 import { Prisma } from "../generated/prisma"
 import { verify } from "jsonwebtoken"
@@ -12,18 +12,16 @@ import { Email } from "../User/User.types"
 
 export const  productRepository:RepositoryContract = {
     getSplicedPosts: async (skip, take, filter) => {
-        try{
-            // Створюємо мутабельні версії змінних які збеігають query параметри та перетворюємо їх у певні типи даних
-    
-            const posts = await client.post.findMany({take: take})
+        try{    
+            const posts = await client.post.findMany({take: take, include: {tags: true, createdBy: true}})
             
     
             console.log(skip)
             console.log(take)
             console.log(filter)
-            let filteredPosts: Post[] = posts.slice(skip, take + skip)
+            let filteredPosts: PostWithTags[] = posts.slice(skip, take + skip)
             if (filter){
-                filteredPosts = filteredPosts.filter((element: Post) => {
+                filteredPosts = filteredPosts.filter((element: PostWithTags) => {
                     return element.title.includes("a")
                 })
             }
@@ -42,7 +40,7 @@ export const  productRepository:RepositoryContract = {
 
         const post =  client.post.findUnique({
             where: {id: postId},
-            include: include
+            include: {...include, createdBy: true}
         })
 
         return post
@@ -92,7 +90,6 @@ export const  productRepository:RepositoryContract = {
                 },
                 data: postData
             })
-    
             
             return post
         }catch(error){

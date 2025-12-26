@@ -35,5 +35,15 @@ export const UserRepository: RepositoryContract = {
             return "user not found"
         }
         return user
-    }
+    },
+    getById: async (userId) => { 
+        const user = client.user.findUnique({
+            where: {id: userId}
+        })
+        if (!user){
+            return "user with that id not find"
+        }
+
+        return user
+    },
 }
