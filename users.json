@@ -1,20 +1,20 @@
 [
-    {
-        "id": 1,
-        "username": "Dima",
-        "email": "dima1@gmail.com",
-        "password": "12345"
-    },
-    {
-        "id": 2,
-        "username": "Bohdan",
-        "email": "bohdan2@gmail.com",
-        "password": "54321"
-    },
-    {
-        "id": 3,
-        "username": "Misha",
-        "email": "misha3@gmail.com",
-        "password": "67890"
-    }
+	{
+		"id": 1,
+		"username": "Dima",
+		"email": "dima1@gmail.com",
+		"password": "12345"
+	},
+	{
+		"id": 2,
+		"username": "Bohdan",
+		"email": "bohdan2@gmail.com",
+		"password": "54321"
+	},
+	{
+		"id": 3,
+		"username": "Misha",
+		"email": "misha3@gmail.com",
+		"password": "67890"
+	}
 ]

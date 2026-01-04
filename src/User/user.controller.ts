@@ -1,52 +1,51 @@
+import type { ControllerContract } from "./User.types";
 import { UserService } from "./user.service";
-import { ControllerContract } from "./User.types";
 
 export const UserController: ControllerContract = {
-    registration: async (req, res) => {
-        const body = req.body
-        
-        const response = await UserService.registration(body)
+	registration: async (req, res) => {
+		const body = req.body;
 
-        if (typeof response === "string"){
-            res.status(400).json(response)
-            return
-        }
+		const response = await UserService.registration(body);
 
-        res.status(200).json(response)
-    },
-    login: async (req, res) => {
-        const body = req.body
-        
-        const response = await UserService.login(body)
+		if (typeof response === "string") {
+			res.status(400).json(response);
+			return;
+		}
 
-        if (typeof response === "string"){
-            res.status(400).json(response)
-            return
-        }
+		res.status(200).json(response);
+	},
+	login: async (req, res) => {
+		const body = req.body;
 
-        res.status(200).json(response)
-    },
-    me: async (req, res) => {
-        
-        const response = await UserService.me(res.locals.token);
+		const response = await UserService.login(body);
 
-        if (typeof response === "string"){
-            res.status(400).json(response)
-            return
-        }
+		if (typeof response === "string") {
+			res.status(400).json(response);
+			return;
+		}
 
-        if (!response){
-            res.status(404).json("user not found")
-            return
-        }
+		res.status(200).json(response);
+	},
+	me: async (req, res) => {
+		const response = await UserService.me(res.locals.token);
 
-        res.status(200).json(response)
-    },
-    getById: async (req, res) => {
-        const userId = Number(req.params.id)
+		if (typeof response === "string") {
+			res.status(400).json(response);
+			return;
+		}
 
-        const response = await UserService.getById(userId)
+		if (!response) {
+			res.status(404).json("user not found");
+			return;
+		}
 
-        res.status(200).json(response)
-    }
-}
+		res.status(200).json(response);
+	},
+	getById: async (req, res) => {
+		const userId = Number(req.params.id);
+
+		const response = await UserService.getById(userId);
+
+		res.status(200).json(response);
+	},
+};
